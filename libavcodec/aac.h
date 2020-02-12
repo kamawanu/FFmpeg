@@ -1,4 +1,4 @@
-/*
+ /*
  * AAC definitions and structures
  * Copyright (c) 2005-2006 Oded Shimon ( ods15 ods15 dyndns org )
  * Copyright (c) 2006-2007 Maxim Gavrilov ( maxim.gavrilov gmail com )
@@ -232,6 +232,7 @@ typedef struct {
     MPEG4AudioConfig m4ac;
 
     int is_saved;                 ///< Set if elements have stored overlap from previous frame.
+    int syn;
     DynamicRangeControl che_drc;
 
     /**

@@ -1606,8 +1606,32 @@ static int aac_decode_frame(AVCodecContext * avccontext, void * data, int * data
     GetBitContext gb;
     enum RawDataBlockType elem_type;
     int err, elem_id, data_size_tmp;
+    int remain = buf_size;
 
     init_get_bits(&gb, buf, buf_size*8);
+    while (ac->syn == 0) {
+      av_log(avccontext, AV_LOG_ERROR, "[%02x]", show_bits(&gb, 8));
+      if (show_bits(&gb, 8) == 0xff) {
+        if ((err = parse_adts_frame_header(ac, &gb)) < 0) {
+            av_log(avccontext, AV_LOG_ERROR, "Error decoding AAC frame header.\n");
+            return -1;
+        }
+        if (ac->m4ac.sampling_index > 12) {
+            av_log(ac->avccontext, AV_LOG_ERROR, "invalid sampling rate index %d\n", ac->m4ac.sampling_index);
+            return -1;
+        }
+	ac->syn = 1;
+	av_log(avccontext, AV_LOG_ERROR, "Detect ADTS header Size:%d\n", err);
+	break;
+      }
+      get_bits(&gb, 8);
+      remain--;
+      if (remain < 1) {
+	av_log(avccontext, AV_LOG_ERROR, "Not Found ADTS header\n");
+        *data_size = 0;
+        return buf_size;
+      }
+    }
 
     if (show_bits(&gb, 12) == 0xfff) {
         if (parse_adts_frame_header(ac, &gb) < 0) {
@@ -1626,6 +1650,7 @@ static int aac_decode_frame(AVCodecContext * avccontext, void * data, int * data
 
         if(elem_type < TYPE_DSE && !(che=get_che(ac, elem_type, elem_id))) {
             av_log(ac->avccontext, AV_LOG_ERROR, "channel element %d.%d is not allocated\n", elem_type, elem_id);
+	    ac->syn = 0;
             return -1;
         }
 
