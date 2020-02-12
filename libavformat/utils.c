@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <strings.h>
+#include "text_decode.h"
 
 #undef NDEBUG
 #include <assert.h>
@@ -2889,10 +2890,15 @@ void dump_format(AVFormatContext *ic,
     if(ic->nb_programs) {
         int j, k;
         for(j=0; j<ic->nb_programs; j++) {
+	    unsigned char obuf[2050];
+	    int olen = 0;
             AVMetadataTag *name = av_metadata_get(ic->programs[j]->metadata,
                                                   "name", NULL, 0);
-            av_log(NULL, AV_LOG_INFO, "  Program %d %s\n", ic->programs[j]->id,
-                   name ? name->value : "");
+	    obuf[0] = '\0';
+	    if (name != NULL) {
+	      text_decode2(name->value, strlen(name->value), obuf, &olen);
+	    }
+            av_log(NULL, AV_LOG_INFO, "  Program %d %s\n", ic->programs[j]->id, obuf);
             for(k=0; k<ic->programs[j]->nb_stream_indexes; k++)
                 dump_stream_format(ic, ic->programs[j]->stream_index[k], index, is_output);
          }

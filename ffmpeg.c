@@ -2338,9 +2338,12 @@ static void opt_frame_crop_top(const char *arg)
     }
     if ((frame_topBand) >= frame_height){
         fprintf(stderr, "Vertical crop dimensions are outside the range of the original image.\nRemember to crop first and scale second.\n");
-        av_exit(1);
+	//        av_exit(1);
     }
     frame_height -= frame_topBand;
+    if (frame_height < 64) {
+      frame_height = 64;
+    }
 }
 
 static void opt_frame_crop_bottom(const char *arg)
@@ -2356,9 +2359,12 @@ static void opt_frame_crop_bottom(const char *arg)
     }
     if ((frame_bottomBand) >= frame_height){
         fprintf(stderr, "Vertical crop dimensions are outside the range of the original image.\nRemember to crop first and scale second.\n");
-        av_exit(1);
+	//        av_exit(1);
     }
     frame_height -= frame_bottomBand;
+    if (frame_height < 64) {
+      frame_height = 64;
+    }
 }
 
 static void opt_frame_crop_left(const char *arg)
@@ -2374,9 +2380,12 @@ static void opt_frame_crop_left(const char *arg)
     }
     if ((frame_leftBand) >= frame_width){
         fprintf(stderr, "Horizontal crop dimensions are outside the range of the original image.\nRemember to crop first and scale second.\n");
-        av_exit(1);
+	//        av_exit(1);
     }
     frame_width -= frame_leftBand;
+    if (frame_width < 36) {
+      frame_width = 36;
+    }
 }
 
 static void opt_frame_crop_right(const char *arg)
@@ -2392,9 +2401,12 @@ static void opt_frame_crop_right(const char *arg)
     }
     if ((frame_rightBand) >= frame_width){
         fprintf(stderr, "Horizontal crop dimensions are outside the range of the original image.\nRemember to crop first and scale second.\n");
-        av_exit(1);
+	//        av_exit(1);
     }
     frame_width -= frame_rightBand;
+    if (frame_width < 36) {
+      frame_width = 36;
+    }
 }
 
 static void opt_frame_size(const char *arg)

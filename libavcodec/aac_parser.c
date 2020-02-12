@@ -31,13 +31,16 @@
 int ff_aac_parse_header(GetBitContext *gbc, AACADTSHeaderInfo *hdr)
 {
     int size, rdb, ch, sr;
+    int id, layer;
     int aot, crc_abs;
 
     if(get_bits(gbc, 12) != 0xfff)
         return AAC_AC3_PARSE_ERROR_SYNC;
 
-    skip_bits1(gbc);             /* id */
-    skip_bits(gbc, 2);           /* layer */
+    id = get_bits1(gbc); /* id */
+    layer = get_bits(gbc, 2); /* layer */
+    //    skip_bits1(gbc);             /* id */
+    //    skip_bits(gbc, 2);           /* layer */
     crc_abs = get_bits1(gbc);    /* protection_absent */
     aot     = get_bits(gbc, 2);  /* profile_objecttype */
     sr      = get_bits(gbc, 4);  /* sample_frequency_index */
@@ -51,6 +54,11 @@ int ff_aac_parse_header(GetBitContext *gbc, AACADTSHeaderInfo *hdr)
 
     skip_bits1(gbc);             /* original/copy */
     skip_bits1(gbc);             /* home */
+    if (id == 1) {
+      /* MPEG2 */
+    } else {
+      int emphasis = get_bits(gbc, 2); /* MPEG4 only */
+    }
 
     /* adts_variable_header */
     skip_bits1(gbc);             /* copyright_identification_bit */
